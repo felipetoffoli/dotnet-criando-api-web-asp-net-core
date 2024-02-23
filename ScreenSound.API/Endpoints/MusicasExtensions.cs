@@ -27,8 +27,15 @@ namespace ScreenSound.API.Endpoints
                 return Results.Ok(musica);
             });
 
-            app.MapPost("/musicas", ([FromServices] DAL<Musica> dal, [FromBody] PostMusicasRequests musicaRequests) => {
-                var musica = new Musica(musicaRequests.nome);
+            app.MapPost("/musicas", ([FromServices] DAL < Artista > dalArtista, [FromServices] DAL<Musica> dal, [FromBody] PostMusicasRequests musicaRequests) => {
+                var artista = dalArtista.RecuperarPor(a => a.Id == musicaRequests.ArtistaId);
+                var musica = new Musica(musicaRequests.Nome) {
+                    Artista = artista is not null ? artista : null,
+                    AnoLancamento = musicaRequests.AnoLancamento,
+                    Generos = GeneroRequestConverter(musicaRequests.Generos) is not null ? GeneroRequestConverter(musicaRequests.Generos) : new List<Genero>()
+
+
+                };
                 dal.Adicionar(musica);
                 return Results.Ok();
             });
@@ -65,6 +72,20 @@ namespace ScreenSound.API.Endpoints
             });
 
 
+        }
+        
+        private static ICollection<Genero> GeneroRequestConverter(ICollection<GeneroRequest> generos)
+        {
+            return generos.Select(a => RequestToEntity(a)).ToList();
+        }
+
+        private static Genero RequestToEntity(GeneroRequest genero)
+        {
+            return new Genero(genero.Nome)
+            {
+                Nome = genero.Nome,
+                Descricao = genero.Descricao
+            } ;
         }
     }
 
