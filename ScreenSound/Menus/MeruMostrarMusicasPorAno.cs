@@ -16,7 +16,7 @@ internal class MenuMostrarMusicasPorAno : Menu
         Console.Write("Digite o ano para consultar músicas:");
         string anoLancamento = Console.ReadLine()!;
         var musicaDal = new DAL<Musica>(new ScreenSoundContext());
-        var listaAnoLancamento = musicaDal.ListarPor(a => a.AnoLancamento == Convert.ToInt32(anoLancamento));
+        var listaAnoLancamento = musicaDal.RecuperarListaPor(a => a.AnoLancamento == Convert.ToInt32(anoLancamento));
         if (listaAnoLancamento.Any())
         {
             Console.WriteLine($"\nMusicas do Ano {anoLancamento}:");
